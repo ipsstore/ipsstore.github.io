@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App - Full Screen</title>
+    <!-- Tailwind CSS untuk styling cepat -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+        /* Iframe memenuhi seluruh layar */
+        .iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* Animasi putar untuk loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay Loading (Muncul pertama kali sebelum aplikasi siap) -->
+    <div id="loading-overlay" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="loader mb-4"></div>
+        <p class="text-gray-500 font-medium animate-pulse">Menyiapkan Aplikasi...</p>
+    </div>
+
+    <!-- Iframe Aplikasi Google Apps Script -->
+    <iframe 
+        id="app-frame"
+        src="https://script.google.com/macros/s/AKfycbzSHCiKPwwZeSYnEANwLlaUkklrbdIBDqbIN7VsvpwBICrBS9KsVQueYJjSb1sJDaYP/exec" 
+        class="iframe-container"
+        allow="geolocation; microphone; camera; clipboard-read; clipboard-write; encrypted-media;"
+    ></iframe>
+
+    <script>
+        const iframe = document.getElementById('app-frame');
+        const overlay = document.getElementById('loading-overlay');
+
+        // Fungsi untuk menghilangkan loading screen setelah iframe dimuat sempurna
+        iframe.onload = function() {
+            // Memberikan sedikit jeda agar transisi terasa mulus
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 700);
+            }, 500);
+        };
+
+        // Penanganan jika server Google lambat merespon (Fallback)
+        setTimeout(() => {
+            if (overlay.style.display !== 'none') {
+                const text = overlay.querySelector('p');
+                if (text) text.textContent = 'Hampir siap...';
+            }
+        }, 8000);
+    </script>
+</body>
+</html>
